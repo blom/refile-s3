@@ -63,7 +63,8 @@ module Refile
       if uploadable.is_a?(Refile::File) and uploadable.backend.is_a?(S3) and uploadable.backend.access_key_id == access_key_id
         object(id).copy_from(copy_source: [@bucket_name, uploadable.backend.object(uploadable.id).key].join("/"))
       else
-        object(id).put(body: uploadable, content_length: uploadable.size)
+        content_type = uploadable.content_type if uploadable.respond_to?(:content_type)
+        object(id).put(body: uploadable, content_length: uploadable.size, content_type: content_type)
       end
 
       Refile::File.new(self, id)
